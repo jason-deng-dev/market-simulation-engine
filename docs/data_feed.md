@@ -15,10 +15,8 @@ Lobster generates 'message' and 'orderbook' file for each trading day
 
 ## Orderbook
 - orderbook file contains the evolution of the limit orderbook up to the requested number of levels
-- columns interleave ask/bid per level: level 1 ask → level 1 bid → level 2 ask → level 2 bid → ... (for level-10 file, 40 columns total)
-- one row per orderbook update event, timestamped to match the message file
 
-Sample rows (first 4 levels shown; level-10 file continues to 40 columns):
+Sample rows
 
 | Ask Price 1 | Ask Size 1 | Bid Price 1 | Bid Size 1 | Ask Price 2 | Ask Size 2 | Bid Price 2 | Bid Size 2 | ... |
 |------------:|-----------:|------------:|-----------:|------------:|-----------:|------------:|-----------:|:---:|
@@ -53,3 +51,30 @@ Sample rows:
   - Execution of a sell(buy) limit order corresponds to a buyer(seller) initated trade, i.e. buy(sell) trade.
 
 # Data feed implementation
+
+## Step 1: Parse & Normalize
+convert entries into structs
+```c
+struct Message{
+  int direction;
+  int price;
+  int size;
+  int orderId;
+  int eventType;
+  std::chrono::nanoseconds timestamp;
+}
+```
+## Step 2: Iterate Chronologically
+in the event loop, we iterate across the messages
+```c
+while (auto event = data_feed.next()) {
+  ...
+}
+```
+
+## Step 3: Market State 
+Market state can be represented using my orderbook implementation (https://github.com/jason-deng-dev/Orderbook)
+
+We cross reference the Orderbook data from LOBSTER with the resulting state produced on each Message order
+
+message.csv (event-by-event) => Orderbook engine (checking state after each event) => want to see if state matches orderbook.csv rows
