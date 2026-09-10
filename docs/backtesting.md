@@ -5,31 +5,29 @@ Backtesting
 
 https://www.youtube.com/watch?v=KD_fh_jA_iQ (No. You don't need to backtest a trading strategy.)
 
-# Components
+# workflow
 
-## Data feed
-- loads and iterates through historical market data
+As we iterate across historical stock data of companies over an event horizon, we test different strategies via "trader bots" that will run their stratgies with starting balance etc.
 
-LOBSTER has 2 files
-- raw message stream(orders, cancels, executions)
-- and own reconstructed orderbook snapshots at every event
+by having them execute based on their strategies we want to see after our data what is the resulting payoff
 
-so we can replay LOBSTER messages through execution engine
-- compare against LOBSTER's recorded executions (if matches, engine provably corect on real excahnge flow)
+so we need to be able to tweak differnt parameters of the traders (the interface layer for client) to see how different strategies perform
 
-## Strategy Logic
-- makes trading decisions based on market data (if price > 100, send a limit order)
+# Builds
 
-## Execution Engine
-- sends order to orderbook and recieves fill confirmations
+## Build 1
 
-## State Manager 
-- Tracks the trader's positions, cash, and open orders across time
+Data feed class
+- reads from the stock historical data and feeds to our Backtest class
 
-## Recorder/Anlaytics (done in Python pandas)
-- Logs every trade, P&L change and final risk metricsmm
+Strategy class
+- class which contains parameters to tune the strategy we want to backtest
 
-# Parallelism
-- Parallel backtesting = parrallel runs of sequential engines, never a parallel run
+State class
+- which tracks what our strategy has generated in terms of at what point it bought, when it sold, the total profit/gain/loss and each point of the actions taken
 
-split into lanes, each lane is a byte-identical replica of the single-threaded engineto
+Analytics class
+- which uses the information stored in State class to generate metrics we can use to grade the strategy
+
+Backtest class
+- the glue that calls all of the classes, to perform a backtest
