@@ -35,7 +35,7 @@ add_executable(backtesting_test
   tests/backtesting_test.cc
 )
 
-target_link_libraries(backtesting_test PRIVATE_HEADER
+target_link_libraries(backtesting_test PRIVATE
   GTest::gtest_main
   marketSim_core
 )

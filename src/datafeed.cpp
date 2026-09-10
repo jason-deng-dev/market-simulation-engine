@@ -1,10 +1,10 @@
-#include "../include/datafeed.h"
+#include "datafeed.h"
 
 bool DataFeed::load(const std::string &filePath) {
     std::ifstream in(filePath);
     if (!in)
       return false;
-
+    
     std::error_code ec;
     auto fileSize = std::filesystem::file_size(filePath, ec);
     if (ec) {
