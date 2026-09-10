@@ -1,7 +1,7 @@
 import yfinance as yf
 import sys
 
-tickr = "NVDA"
+tickr = "AAPL"
 interval = "1d"
 period = "max"
 

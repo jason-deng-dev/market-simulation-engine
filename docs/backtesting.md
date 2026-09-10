@@ -17,17 +17,29 @@ so we need to be able to tweak differnt parameters of the traders (the interface
 
 ## Build 1
 
-Data feed class
+### Data feed class
 - reads from the stock historical data and feeds to our Backtest class
 
-Strategy class
+bool load(filePath)
+- returns true if successful load, false if load failed
+- copying the contents of the csv file into `std::vector<char>` buffer
+- as well as setting up *cursor which points to the start of the data (after skipping 3 rows of header information in csv)
+
+// precondition: the csv file we feed is made of complete rows, matching the signature we specify
+bool next(&row)
+- need to grab value from the current row, extracted via std::from_chars, and store in row
+- return false if cursor is out of range or if extraction fails aborting the function call
+
+
+
+### Strategy class
 - class which contains parameters to tune the strategy we want to backtest
 
-State class
+### State class
 - which tracks what our strategy has generated in terms of at what point it bought, when it sold, the total profit/gain/loss and each point of the actions taken
 
-Analytics class
+### Analytics class
 - which uses the information stored in State class to generate metrics we can use to grade the strategy
 
-Backtest class
+### Backtest class
 - the glue that calls all of the classes, to perform a backtest
