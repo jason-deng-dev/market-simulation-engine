@@ -8,8 +8,9 @@ class Strategy {
 public:
   Strategy(int maxHistorySize_ = 0) : maxHistorySize{maxHistorySize_} {}
   // return positive to buy, negative to sell
-  virtual int getMove(State &, double price) = 0;
+  virtual int getMove(State &, double openPrice, double closePrice) = 0;
 
+protected:
   void addPrice(double price) {
     if (maxHistorySize == 0)
       return;
@@ -20,13 +21,14 @@ public:
 
   std::queue<double> closePriceHistory;
 
-private:
-  virtual int exitCondition(State &state,
-                            double price) = 0; // 0 if don't exit, >0 to buy
-                                               // (short), <0 to sell (long)
-  virtual int entryCondition(State &state,
-                             double price) = 0; // 0 if don't enter, <0 to sell
-                                                // (short), >0 to buy (long)
+  virtual int
+  exitCondition(State &state, double openPrice,
+                double closePrice) = 0; // 0 if don't exit, >0 to buy
+                                        // (short), <0 to sell (long)
+  virtual int
+  entryCondition(State &state, double openPrice,
+                 double closePrice) = 0; // 0 if don't enter, <0 to sell
+                                         // (short), >0 to buy (long)
 
   int maxHistorySize;
 };
@@ -44,34 +46,39 @@ buy (tracks only last priceHistory)
 */
 
 class reversion_strategy : public Strategy {
-  reversion_strategy(int maxHistorySize_ = 1) : Strategy(maxHistorySize_) {}
+public:
+  reversion_strategy() : Strategy(1) {}
 
-  int getMove(State &state, double price) override {
-    if (closePriceHistory.empty())
+  int getMove(State &state, double openPrice, double closePrice) override {
+    if (closePriceHistory.empty()) {
+      addPrice(closePrice);
       return 0;
-
-    int res =0;
-    res += exitCondition(state, price);
-    res += entryCondition(state, price);
-    return res;
+    }
+    addPrice(closePrice);
+    return exitCondition(state, openPrice, closePrice) +
+           entryCondition(state, openPrice, closePrice);
   }
 
-  int exitCondition(State &state, double price) override {
-    if (state.getNetQty() == 0)
-      return 0;
-    else if (state.getNetQty() > 0)
+protected:
+  int exitCondition(State &state, double openPrice,
+                    double closePrice) override {
+
+    if (state.getNetQty() > 0)
       return -100;
     else if (state.getNetQty() < 0)
       return 100;
+    else
+      return 0;
   }
 
-  int entryCondition(State &state, double price) override {
-    if (closePriceHistory.back() < price) {
+  int entryCondition(State &state, double openPrice,
+                     double closePrice) override {
+    if (closePriceHistory.back() < openPrice) {
       return 100;
-    } else if (closePriceHistory.back() > price) {
+    } else if (closePriceHistory.back() > openPrice) {
       return -100;
-    }
-    else return 0;
+    } else
+      return 0;
   }
 };
 

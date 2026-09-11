@@ -41,6 +41,14 @@ public:
     executions.push_back({date, qty, price, maxPrice, minPrice});
   }
 
+  const std::vector<Equity>& getEquityCurve() const{
+    return equityCurve;
+  }
+
+  const std::vector<Execution>& getExecutions() const {
+    return executions;
+  }
+
 private:
   double cash{};
   int netQty{};

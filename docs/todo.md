@@ -1,0 +1,3 @@
+- [ ] MVP
+  - [x] Data feed 
+  - [x] State 

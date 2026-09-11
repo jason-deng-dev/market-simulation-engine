@@ -13,6 +13,12 @@ by having them execute based on their strategies we want to see after our data w
 
 so we need to be able to tweak differnt parameters of the traders (the interface layer for client) to see how different strategies perform
 
+# Fill timing
+Next-bar timing
+- signal from close of N -> order submitted -> fill on N+1
+- compute after close, submit, fill at next open
+
+
 # Builds
 
 ## Build 1

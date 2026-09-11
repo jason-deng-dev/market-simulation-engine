@@ -1,17 +1,24 @@
+#include "backtest.h"
 #include "datafeed.h"
+#include "strategy.h"
+#include "state.h"
 #include <iostream>
 
 int main() {
-  Row r{};
-  DataFeed df{};
+  
 
+  DataFeed df{};
   df.load("data/nvda_daily.csv");
 
-  for (int i = 0; i < 3; ++i) {
-    df.next(r);
-    std::cout << r.date << '-' << r.close << '-' << r.high << '-' << r.low
-              << '-' << r.open << '-' << r.volume << '\n';
-  }
+  reversion_strategy rs{};
+
+  State st(100, 0);
+  
+  std::cout << "cash before:" << st.getCash() <<'\n';
+  Backtest bt{};
+  bt.run(df, rs, st);
+
+  std::cout << "cash after:" << st.getCash() << " shares after:" << st.getNetQty() << '\n';
 
   return 0;
 }
