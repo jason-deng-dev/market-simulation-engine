@@ -3,17 +3,19 @@
 
 #include "datafeed.h"
 
+class Backtest {
+public:
+  void run(DataFeed &feed) {
+    Bar bar{};
+    while (feed.next(bar)) {
+      auto &date = bar.date;
+      auto close = bar.close, high = bar.high, low = bar.low, open = bar.open;
+      auto volume = bar.volume;
 
-class Backtest{
-  void run(DataFeed& feed) {
-    Row row;
-    while (feed.next(row)) {
+
 
     }
-
   }
 };
-
-
 
 #endif
