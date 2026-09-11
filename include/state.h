@@ -1,13 +1,51 @@
 #ifndef STATE_H
 #define STATE_H
 
-class State{
+#include <string>
+#include <vector>
 
-
-
-  
+struct Equity {
+  std::string date{};
+  double equity;
+  int netQty;
 };
 
+struct Execution {
+  std::string date{};
+  int qty;
+  double price;
+  double maxPrice;
+  double minPrice;
+};
 
+class State {
+public:
+  State (double cash_, int netQty_): cash{cash_}, netQty{netQty_}  {
+  }
+
+  double getCash() const {
+    return cash;
+  }
+  int getNetQty() const {
+    return netQty;
+  }
+
+  // called on each bar
+  void addEquity(const std::string& date, double price) {
+    equityCurve.push_back({date, price*netQty+cash, netQty});
+  }
+
+  void addExecution(const std::string& date, int qty, double price, double maxPrice, double minPrice) {
+    cash -= qty * price;
+    netQty += qty;
+    executions.push_back({date, qty, price, maxPrice, minPrice});
+  }
+
+private:
+  double cash{};
+  int netQty{};
+  std::vector<Equity> equityCurve;
+  std::vector<Execution> executions;
+};
 
 #endif
