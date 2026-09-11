@@ -37,9 +37,11 @@ bool next(&row)
 
 ### State class
 - which tracks what our strategy has generated in terms of at what point it bought, when it sold, the total profit/gain/loss and each point of the actions taken
+- member data variables as described in `metrics.md`
 
 ### Analytics class
-- which uses the information stored in State class to generate metrics we can use to grade the strategy
+- which uses the information stored in State class to generate metrics we can use to grade the 
+- Metrics are as described in `metrics.md`
 
 ### Backtest class
 - the glue that calls all of the classes, to perform a backtest
