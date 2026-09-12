@@ -14,12 +14,15 @@ Risk management:
 # Structure
 
 Base class Strategy is an Abstract class
-- getMove(State, Bar) 
+- getMove(State, open price, close price) 
   - called by Backtest class which specifies whether to buy or sell
-- has entryConditions(State, Bar), exitConditions(State, Bar)
+  - open price is used to decide strategy
+  - close price added to priceHistory (to be used for later moves)
+- has entryConditions(), exitConditions()
   - called by getMove to determine action to perform
 - has price history, keeping track of past N number of prices
   - Derived classes pass up how much price history they need to use
+- 
 
 specifc strategies are created by creating a derived class of Strategy, and implementing the getMove(), exitCondition() and entryCondition() functions
 
