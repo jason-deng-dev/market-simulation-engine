@@ -2,6 +2,7 @@
 #define STRATEGY_H
 
 #include "state.h"
+#include <cstddef>
 #include <queue>
 
 class Strategy {
@@ -15,18 +16,19 @@ protected:
     if (maxHistorySize == 0)
       return;
     closePriceHistory.push(price);
-    if (closePriceHistory.size() > maxHistorySize)
+    if (closePriceHistory.size() > static_cast<std::size_t>(maxHistorySize))
       closePriceHistory.pop();
   };
 
   std::queue<double> closePriceHistory;
 
+  virtual int exitCondition(State &state,
+                            double openPrice) = 0; // 0 if don't exit, >0 to buy
+                                                   // (short), <0 to sell (long)
   virtual int
-  exitCondition(State &state, double openPrice) = 0; // 0 if don't exit, >0 to buy
-                                        // (short), <0 to sell (long)
-  virtual int
-  entryCondition(State &state, double openPrice) = 0; // 0 if don't enter, <0 to sell
-                                         // (short), >0 to buy (long)
+  entryCondition(State &state,
+                 double openPrice) = 0; // 0 if don't enter, <0 to sell
+                                        // (short), >0 to buy (long)
 
   int maxHistorySize;
 };
@@ -53,26 +55,21 @@ public:
       return 0;
     }
 
-    int move = exitCondition(state, openPrice) +
-           entryCondition(state, openPrice);
+    int move =
+        exitCondition(state, openPrice) + entryCondition(state, openPrice);
     addPrice(closePrice);
 
-
-    return move ;
+    return move;
   }
 
 protected:
   int exitCondition(State &state, double openPrice) override {
-    if (state.getNetQty() > 0)
-      return -state.getNetQty();
-    else if (state.getNetQty() < 0)
-      return state.getNetQty();
-    else
-      return 0;
+    return -state.getNetQty();
   }
 
   int entryCondition(State &state, double openPrice) override {
-    double qty = (state.getCash() + openPrice*state.getNetQty())*0.05 / openPrice;
+    double qty =
+        (state.getCash() + openPrice * state.getNetQty()) * 0.05 / openPrice;
 
     if (closePriceHistory.back() < openPrice) {
       return qty;
@@ -81,7 +78,6 @@ protected:
     } else
       return 0;
   }
-
 };
 
 #endif
