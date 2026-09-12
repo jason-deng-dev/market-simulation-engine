@@ -22,12 +22,10 @@ protected:
   std::queue<double> closePriceHistory;
 
   virtual int
-  exitCondition(State &state, double openPrice,
-                double closePrice) = 0; // 0 if don't exit, >0 to buy
+  exitCondition(State &state, double openPrice) = 0; // 0 if don't exit, >0 to buy
                                         // (short), <0 to sell (long)
   virtual int
-  entryCondition(State &state, double openPrice,
-                 double closePrice) = 0; // 0 if don't enter, <0 to sell
+  entryCondition(State &state, double openPrice) = 0; // 0 if don't enter, <0 to sell
                                          // (short), >0 to buy (long)
 
   int maxHistorySize;
@@ -45,23 +43,26 @@ naive implementation
 buy (tracks only last priceHistory)
 */
 
-class reversion_strategy : public Strategy {
+class naive_reversion_strategy : public Strategy {
 public:
-  reversion_strategy() : Strategy(1) {}
+  naive_reversion_strategy() : Strategy(1) {}
 
   int getMove(State &state, double openPrice, double closePrice) override {
     if (closePriceHistory.empty()) {
       addPrice(closePrice);
       return 0;
     }
+
+    int move = exitCondition(state, openPrice) +
+           entryCondition(state, openPrice);
     addPrice(closePrice);
-    return exitCondition(state, openPrice, closePrice) +
-           entryCondition(state, openPrice, closePrice);
+
+
+    return move ;
   }
 
 protected:
-  int exitCondition(State &state, double openPrice,
-                    double closePrice) override {
+  int exitCondition(State &state, double openPrice) override {
 
     if (state.getNetQty() > 0)
       return -100;
@@ -71,8 +72,7 @@ protected:
       return 0;
   }
 
-  int entryCondition(State &state, double openPrice,
-                     double closePrice) override {
+  int entryCondition(State &state, double openPrice) override {
     if (closePriceHistory.back() < openPrice) {
       return 100;
     } else if (closePriceHistory.back() > openPrice) {
