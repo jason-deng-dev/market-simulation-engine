@@ -10,9 +10,9 @@ int main() {
   DataFeed df{};
   df.load("data/nvda_daily.csv");
 
-  reversion_strategy rs{};
+  naive_reversion_strategy rs{};
 
-  State st(100, 0);
+  State st(100000, 0);
   
   std::cout << "cash before:" << st.getCash() <<'\n';
   Backtest bt{};
