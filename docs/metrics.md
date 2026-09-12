@@ -64,8 +64,8 @@ struct PositionRecord{time openTime, closeTime; int direction; double entryNotio
 
 
 - win rate 
-  - for Per-Positon = using positionTradeHistory
-  - for Per-Exit = using matchingHistory
+  - for Per-Positon
+  - for Per-Exit 
 - avg win/loss 
   - Average win/loss = (total profit from winning/losing trades) / (number of winning/losing trades)
   - win/loss ratio = Average win / Average loss
