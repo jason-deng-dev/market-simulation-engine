@@ -26,7 +26,9 @@ void Backtest::run(DataFeed &feed, Strategy &strategy, State &state) {
 
     // moving further from flat (increasing position)
     bool increasing = std::abs(state.getNetQty() + qty) > std::abs(state.getNetQty());
-    if (qty != 0 && (!increasing && std::abs(qty) * bar.open <= state.getCash())) {
+
+    // not increasing position OR can afford execution
+    if (qty != 0 && (!increasing || std::abs(qty) * bar.open <= state.getCash())) {
       state.addExecution(bar.date, qty, bar.open, maxPrice, minPrice);
     }
     // update equityCurve
