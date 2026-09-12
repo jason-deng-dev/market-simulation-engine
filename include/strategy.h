@@ -63,23 +63,25 @@ public:
 
 protected:
   int exitCondition(State &state, double openPrice) override {
-
     if (state.getNetQty() > 0)
-      return -100;
+      return -state.getNetQty();
     else if (state.getNetQty() < 0)
-      return 100;
+      return state.getNetQty();
     else
       return 0;
   }
 
   int entryCondition(State &state, double openPrice) override {
+    double qty = (state.getCash() + openPrice*state.getNetQty())*0.05;
+
     if (closePriceHistory.back() < openPrice) {
-      return 100;
+      return qty;
     } else if (closePriceHistory.back() > openPrice) {
-      return -100;
+      return -qty;
     } else
       return 0;
   }
+
 };
 
 #endif
