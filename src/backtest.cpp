@@ -17,14 +17,16 @@ void Backtest::run(DataFeed &feed, Strategy & strategy, State& state) {
   while (feed.next(bar)) {
     int qty = strategy.getMove(state, bar.open, bar.close);
 
-    // std::cout << "qty:" << qty << '\n';
-
     // update maxPrice/minPrice
     maxPrice = std::max(maxPrice, bar.high);
     minPrice = std::min(minPrice, bar.low);
 
     // update equityCurve, executions in state
     state.addEquity(bar.date, bar.close);
+
+
+     // cannot afford this transaction;
+    if (qty*bar.open > state.getCash()) continue;
     state.addExecution(bar.date, qty, bar.open, maxPrice, minPrice);
     
     // if state.netQty = 0, reset maxPrice/minPrice
