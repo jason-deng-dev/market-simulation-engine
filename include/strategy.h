@@ -72,7 +72,7 @@ protected:
   }
 
   int entryCondition(State &state, double openPrice) override {
-    double qty = (state.getCash() + openPrice*state.getNetQty())*0.05;
+    double qty = (state.getCash() + openPrice*state.getNetQty())*0.05 / openPrice;
 
     if (closePriceHistory.back() < openPrice) {
       return qty;
