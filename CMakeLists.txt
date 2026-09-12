@@ -21,11 +21,15 @@ add_library(marketSim_core
   src/strategy.cpp
 )
 
+
+
 target_include_directories(marketSim_core PUBLIC include)
 
 add_executable(marketSim
   src/main.cpp
 )
+
+target_compile_options(marketSim PRIVATE -Wall -Wextra)
 
 target_link_libraries(marketSim PRIVATE marketSim_core)
 
