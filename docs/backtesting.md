@@ -18,6 +18,16 @@ Next-bar timing
 - signal from close of N -> order submitted -> fill on N+1
 - compute after close, submit, fill at next open
 
+# Assumptions
+- risk-free annual rate = 0
+- prices are split + divided adjusted
+- no slippage, no bid-ask spread, no market impact
+- no commissions or fees
+- no taxes
+- idle cash earns 0
+- 252 trading days for annualization
+- integer share quantities
+- margin rate = 1.0
 
 # Builds
 
