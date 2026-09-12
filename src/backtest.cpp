@@ -43,6 +43,12 @@ void Backtest::run(DataFeed &feed, Strategy &strategy, State &state) {
       minPrice = std::min(minPrice, bar.low);
     }
 
+    // force close account
+    if (state.getNetQty() != 0) {
+      state.addExecution(bar.date, -state.getNetQty(), bar.close, maxPrice, minPrice);
+    }
+    state.addEquity(bar.date, bar.close);
+
     
   }
   std::cout << "Backtest complete\n";
