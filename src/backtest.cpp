@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <climits>
+#include <limits>
 #include <iostream>
 #include "backtest.h"
 #include "datafeed.h"
@@ -11,8 +11,8 @@
 void Backtest::run(DataFeed &feed, Strategy & strategy, State& state) {
 
   Bar bar{};
-  double maxPrice = INT_MIN;
-  double minPrice = INT_MAX;
+  double maxPrice = -std::numeric_limits<double>::infinity();
+  double minPrice = std::numeric_limits<double>::infinity();
 
   while (feed.next(bar)) {
     int qty = strategy.getMove(state, bar.open, bar.close);
@@ -27,12 +27,16 @@ void Backtest::run(DataFeed &feed, Strategy & strategy, State& state) {
 
      // cannot afford this transaction;
     if (qty*bar.open > state.getCash()) continue;
+    bool posNetEqtyBefore = state.getNetQty() > 0;
+
     state.addExecution(bar.date, qty, bar.open, maxPrice, minPrice);
+
+    bool posNetEqtyAfter = state.getNetQty() > 0;
     
-    // if state.netQty = 0, reset maxPrice/minPrice
-    if (state.getNetQty()==0) {
-      maxPrice = INT_MIN;
-      minPrice = INT_MAX;
+    // if state.netQty = 0 or changes between neg and pos, reset maxPrice/minPrice
+    if (state.getNetQty()==0 || posNetEqtyAfter != posNetEqtyBefore) {
+      maxPrice = -std::numeric_limits<double>::infinity();
+      minPrice = std::numeric_limits<double>::infinity();
     }
   }
   std::cout << "Backtest complete\n";
