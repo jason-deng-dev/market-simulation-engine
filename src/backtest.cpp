@@ -16,31 +16,31 @@ void Backtest::run(DataFeed &feed, Strategy &strategy, State &state) {
   while (feed.next(bar)) {
     int qty = strategy.getMove(state, bar.open, bar.close);
 
-    bool negBefore = state.getNetQty() < 0;
-    bool posBefore = state.getNetQty() > 0;
+    int qtyBefore = state.getNetQty();
 
-    // moving further from flat (increasing position)
+    // fill first
     bool increasingPosition =
         std::abs(state.getNetQty() + qty) > std::abs(state.getNetQty());
     bool canAffordPosition = std::abs(qty) * bar.open <= state.getCash();
-
-    maxPrice = std::max(maxPrice, bar.high);
-    minPrice = std::min(minPrice, bar.low);
-
-    // not increasing position OR can afford execution
     if (qty != 0 && (!increasingPosition || canAffordPosition)) {
       state.addExecution(bar.date, qty, bar.open, maxPrice, minPrice);
     }
     state.addEquity(bar.date, bar.close);
 
-    bool negAfter = state.getNetQty() < 0;
-    bool posAfter = state.getNetQty() > 0;
+    int qtyAfter = state.getNetQty();
 
-
-    // update maxPrice/minPrice
-    if (qty != 0 && state.getNetQty() == 0 || negBefore && posAfter || posBefore && negAfter) {
+    // reconcile window against new position
+    if (qtyAfter == 0) {
       maxPrice = -std::numeric_limits<double>::infinity();
       minPrice = std::numeric_limits<double>::infinity();
+    } else if (qtyBefore == 0 || (qtyBefore > 0) != (qtyAfter>0)) {
+      // episode starts here (from flat or flip)
+      maxPrice = bar.high;
+      minPrice = bar.low;
+    } else {
+      // episode continues — extend
+      maxPrice = std::max(maxPrice, bar.high);
+      minPrice = std::min(minPrice, bar.low);
     }
 
     
