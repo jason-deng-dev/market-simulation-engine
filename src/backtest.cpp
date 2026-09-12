@@ -16,32 +16,34 @@ void Backtest::run(DataFeed &feed, Strategy &strategy, State &state) {
   while (feed.next(bar)) {
     int qty = strategy.getMove(state, bar.open, bar.close);
 
-    // update maxPrice/minPrice
+    bool negBefore = state.getNetQty() < 0;
+    bool posBefore = state.getNetQty() > 0;
+
+    // moving further from flat (increasing position)
+    bool increasingPosition =
+        std::abs(state.getNetQty() + qty) > std::abs(state.getNetQty());
+    bool canAffordPosition = std::abs(qty) * bar.open <= state.getCash();
+
     maxPrice = std::max(maxPrice, bar.high);
     minPrice = std::min(minPrice, bar.low);
 
-    bool zeroOrPosEqtyBefore = state.getNetQty() >= 0;
-
-    // execute only if qty > 0 and can afford
-
-    // moving further from flat (increasing position)
-    bool increasing = std::abs(state.getNetQty() + qty) > std::abs(state.getNetQty());
-
     // not increasing position OR can afford execution
-    if (qty != 0 && (!increasing || std::abs(qty) * bar.open <= state.getCash())) {
+    if (qty != 0 && (!increasingPosition || canAffordPosition)) {
       state.addExecution(bar.date, qty, bar.open, maxPrice, minPrice);
     }
-    // update equityCurve
     state.addEquity(bar.date, bar.close);
 
-    bool zeroOrPosEqtyAfter = state.getNetQty() >= 0;
+    bool negAfter = state.getNetQty() < 0;
+    bool posAfter = state.getNetQty() > 0;
 
-    // if state.netQty = 0 or changes between neg and pos, reset
-    // maxPrice/minPrice
-    if (state.getNetQty() == 0 || zeroOrPosEqtyBefore != zeroOrPosEqtyAfter) {
+
+    // update maxPrice/minPrice
+    if (qty != 0 && state.getNetQty() == 0 || negBefore && posAfter || posBefore && negAfter) {
       maxPrice = -std::numeric_limits<double>::infinity();
       minPrice = std::numeric_limits<double>::infinity();
     }
+
+    
   }
   std::cout << "Backtest complete\n";
 }

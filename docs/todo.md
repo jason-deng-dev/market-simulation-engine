@@ -1,3 +1,13 @@
-- [ ] MVP
+- [x] MVP
   - [x] Data feed 
   - [x] State 
+  - [x] Strategy
+  - [x] Backtest
+- [ ] Issues
+  - [x] negative cash still buying
+  - [x] fix fill timing contradiction
+  - [x] instead of fixed share amount in naive_reversion_stratgy, use notional sizing
+  - [x] correct reset for maxPrice/minPrice in Backtest::run
+  - [ ] 
+  - [x] correct condition to execute order in Backtest::run
+  - [x] don't pass closePrice to entryCondition/exitCondition since they shouldn't be able to use it
