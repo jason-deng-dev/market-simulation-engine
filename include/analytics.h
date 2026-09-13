@@ -76,7 +76,9 @@ class Analytics {
 public:
   void captureState(const State &state);
 
-  void fillRecords(const std::vector<Execution> &executions);
+  void recordExecutions(const std::vector<Execution> &executions);
+
+  void recordEquityCurve(const std::vector<Equity>&equityCurve);
 
   void reportPositions() {
     std::cout << "size:" << positionRecords.size() << '\n';

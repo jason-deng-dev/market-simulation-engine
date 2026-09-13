@@ -9,7 +9,7 @@ void Analytics::captureState(const State &state) {
   // Execution<date, qty, price, maxPrice, minPrice>
   const auto &executions = state.getExecutions();
 
-  fillRecords(executions);
+  recordExecutions(executions);
 }
 
 auto sign = [](int q) { return (q > 0) - (q < 0); };
@@ -23,7 +23,7 @@ auto sign = [](int q) { return (q > 0) - (q < 0); };
   direction == -1 = short position
 */
 
-void Analytics::fillRecords(const std::vector<Execution> &executions) {
+void Analytics::recordExecutions(const std::vector<Execution> &executions) {
   std::deque<OpenPosition> openPositions;
   std::string openTime{};
   double entryNotional{0};
@@ -72,4 +72,10 @@ void Analytics::fillRecords(const std::vector<Execution> &executions) {
       entryNotional += sign(qty) * remaining * price;
     }
   }
+}
+
+void Analytics::recordEquityCurve(const std::vector<Equity>&equityCurve) {
+
+
+  
 }
