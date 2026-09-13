@@ -29,7 +29,7 @@ void Analytics::recordExecutions(const std::vector<Execution> &executions) {
   double entryNotional{0};
   double exitNotional{0};
 
-  for (auto [date, qty, price, maxPrice, minPrice] : executions) {
+  for (auto [date, qty, price] : executions) {
     int remaining = std::abs(qty);
     const bool wasOpen = !openPositions.empty();
     // direction of the position held during this fill
@@ -77,5 +77,5 @@ void Analytics::recordExecutions(const std::vector<Execution> &executions) {
 void Analytics::recordEquityCurve(const std::vector<Equity>&equityCurve) {
 
 
-  
+
 }

@@ -23,7 +23,7 @@ void Backtest::run(DataFeed &feed, Strategy &strategy, State &state) {
         std::abs(state.getNetQty() + qty) > std::abs(state.getNetQty());
     bool canAffordPosition = std::abs(qty) * bar.open <= state.getCash();
     if (qty != 0 && (!increasingPosition || canAffordPosition)) {
-      state.addExecution(bar.date, qty, bar.open, maxPrice, minPrice);
+      state.addExecution(bar.date, qty, bar.open);
     }
     state.addEquity(bar.date, bar.close);
 

@@ -57,7 +57,7 @@ double cash = 0.0;
 
 // stored during run
 vector<{time,double equity, int netQty}> equityCurve; // equity at each bar close = cash + netQty*price
-vector<{time, int qty, double price, double maxPrice, double minPrice}> executions; // every fill, qty signed
+vector<{time, int qty, double price}> executions; // every fill, qty signed
 
 // for MFE and MAE, resets when netQty changes sign;
 // updated every back, snapshot saved in executions at fill

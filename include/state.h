@@ -14,8 +14,6 @@ struct Execution {
   std::string date{};
   int qty{};
   double price{};
-  double maxPrice{};
-  double minPrice{};
 };
 
 struct BarExcursion {
@@ -37,11 +35,10 @@ public:
     equityCurve.push_back({date, price * netQty + cash, netQty});
   }
 
-  void addExecution(const std::string &date, int qty, double price,
-                    double maxPrice, double minPrice) {
+  void addExecution(const std::string &date, int qty, double price) {
     cash -= qty * price;
     netQty += qty;
-    executions.push_back({date, qty, price, maxPrice, minPrice});
+    executions.push_back({date, qty, price});
   }
 
   const std::vector<Equity> &getEquityCurve() const { return equityCurve; }
