@@ -12,8 +12,12 @@
   - [x] don't pass closePrice to entryCondition/exitCondition since they shouldn't be able to use it
   - [x] sign conversion error in position management in exitCondition
     - [x] resulting in ever increasing short position
-- [ ] force close account on last bar
 - [ ] Analytics
-  - [x] fillRecords
+  - [x] recordExecutions
     - [x] implement lot based FIFO for exitRecords
+  - [ ] recordEquityCurve
+    - [ ] fill sharpeInfo
+    - [ ] fill maxDrawDown
+    - [ ] fill tradingDays, daysInMarket
+    - [ ] fill startEquity, endEquity
   - [ ] Implement MAE/MFE in backtest
