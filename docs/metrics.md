@@ -9,6 +9,7 @@ Sell 1: 50 shares @ $60 vs. Entry @ $50 -> profit = +$500 -> Win
 Sell 2: 50 shares @ $10 vs. Entry @ $50 -> loss = -$2000 -> Loss
 Result: 1 win, 1 loss (50% win rate)
 ```
+a "sell" here means one matched lot, not one fill — see per-lot FIFO matching below
 2. Per-Position (Round-Trip Accounting)
 ```
 entire position is treated as one trade that closes only when position returns to zero
@@ -19,6 +20,32 @@ Net P&L: -$1,500 -> Loss
 Result: 1 trade, 1 loss (0% win rate)
 ```
 For the purposes of our backtesting, we track both Per-Position and Per-Exit statistics
+
+
+# per-lot FIFO matching
+
+Per-exit records are built by matching each exit fill against open lots, oldest first.
+
+- every entry fill pushes a lot: `{entryTime, remainingQty, entryPrice}`
+- every exit fill consumes from the front of the queue until the fill is exhausted or the queue empties
+  - consume < front lot remainingQty -> front lot shrinks, stays at front
+  - consume == front lot remainingQty -> lot popped
+  - fill > total open qty -> queue empties, remainder opens a new lot on the opposite side at the fill price (this is a position flip)
+- one ExitRecord per lot consumed, not per fill
+  - sell 150 against lots of 100 / 30 / 20 -> 3 records, each with its own entryTime and entryPrice, all sharing the same time and exitPrice
+  - qty per record = the portion of that lot consumed, not the fill qty
+  - sum of qty across the records of one fill == the fill qty
+- same convention as QuantConnect LEAN (`FillGroupingMethod.FillToFill` + `FillMatchingMethod.FIFO`): a sell closing multiple buys is N closed trades, and per-exit win rate counts N
+- lots are per-fill uniform under notional sizing, so per-lot win rate ~= per-fill win rate; diverges once scale-in adds differ in size
+- per-lot is the store, everything else is a view of it
+  - per-fill view = group lot records by time + exitPrice
+  - per-position view = PositionRecord, notional sums, independent of matching method
+  - aggregation only goes one way: a blended entry price can never recover the lots, but lots can always be grouped back up
+- holding period exists only at lot level (exit time - entry time), a blended entry price loses it
+
+invariant, checked per position: `sum(ExitRecord.pnl) == PositionRecord.pnl`. Both views describe the same fills, so if they disagree the matching is wrong.
+
+matching method is a choice, not a fact. FIFO here, but avg cost vs FIFO is jurisdictional and contractual: IRS defaults to FIFO for securities (specific identification to override), CRA pools identical properties at average cost. Record the method next to any per-exit number or it isn't reproducible.
 
 
 # trade-close metrics
@@ -49,17 +76,14 @@ vector<{time, int qty, double price, double maxPrice, double minPrice}> executio
 double maxPrice = -inf;
 double minPrice = inf; 
 
-
-
-
-
-// per-exit
-struct ExitRecord {time t; int qty; double exitPrice; double avgEntryPrice;};
-// pnl = qty * (exitPrice - avgEntryPrice)
+// per-exit — one record per matched lot (FIFO), not per fill
+struct ExitRecord {time t, entryTime; int qty; double exitPrice, entryPrice;};
+// qty is the consumed portion of that lot, magnitude only (no sign)
+// pnl = direction * qty * (exitPrice - entryPrice)   // direction: +1 long, -1 short
 
 // per-position
 struct PositionRecord{time openTime, closeTime; int direction; double entryNotional, exitNotional;};
-//pnl = direction * (exitNotional-entryNotional)
+//pnl = exitNotional-entryNotional
 ```
 
 
@@ -102,9 +126,7 @@ struct PositionRecord{time openTime, closeTime; int direction; double entryNotio
 
 - MAE (Maximum adverse excursion)
   - maximum loss a trade incurs before turning profitable (Long)
-    - Entry price - lowest price during the trade (before it goes up)
   - minimum gain before turning unprofitable (Short)
-    - Entry price - highest price during trade (before it goes down)
 - MFE (Maximum favorable excursion)
   - Maxiumum profit a trade reaches before closing
 
