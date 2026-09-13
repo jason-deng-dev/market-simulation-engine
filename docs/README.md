@@ -17,7 +17,6 @@ Next-bar timing
 - compute after close, submit, fill at next open
 
 # Assumptions
-- force close any remaining positions on final bar
 - risk-free annual rate = 0
 - prices are split + divided adjusted
 - no slippage, no bid-ask spread, no market impact
@@ -27,6 +26,11 @@ Next-bar timing
 - 252 trading days for annualization
 - integer share quantities
 - margin rate = 1.0
+
+# Open position at end of backtest handling
+value remaining positions at the last bar's closing price, and include that unrealized P&L in the final equity
+- the positions are not closed
+- final portfolio value = cash + (shares * last close)
 
 # Builds
 
