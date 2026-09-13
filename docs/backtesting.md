@@ -19,6 +19,7 @@ Next-bar timing
 - compute after close, submit, fill at next open
 
 # Assumptions
+- force close any remaining positions on final bar
 - risk-free annual rate = 0
 - prices are split + divided adjusted
 - no slippage, no bid-ask spread, no market impact

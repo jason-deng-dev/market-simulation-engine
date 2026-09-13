@@ -2,6 +2,7 @@
 #include "datafeed.h"
 #include "strategy.h"
 #include "state.h"
+#include "analytics.h"
 #include <iostream>
 
 int main() {
@@ -18,7 +19,17 @@ int main() {
   Backtest bt{};
   bt.run(df, rs, st);
 
+  Analytics an{};
+
+  
+
+
+  std::cout << "equity after:" << st.getEquityCurve().back().equity <<'\n';
   std::cout << "cash after:" << st.getCash() << " shares after:" << st.getNetQty() << '\n';
+
+  an.captureState(st);
+  // an.reportPositions();
+  an.reportExits();
 
   return 0;
 }

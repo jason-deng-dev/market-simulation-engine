@@ -3,11 +3,17 @@
   - [x] State 
   - [x] Strategy
   - [x] Backtest
-- [ ] Issues
+- [x] Issues
   - [x] negative cash still buying
   - [x] fix fill timing contradiction
   - [x] instead of fixed share amount in naive_reversion_stratgy, use notional sizing
   - [x] correct reset for maxPrice/minPrice in Backtest::run
-  - [ ] 
   - [x] correct condition to execute order in Backtest::run
   - [x] don't pass closePrice to entryCondition/exitCondition since they shouldn't be able to use it
+  - [x] sign conversion error in position management in exitCondition
+    - [x] resulting in ever increasing short position
+- [ ] force close account on last bar
+- [ ] Analytics
+  - [ ] fillRecords
+    - [ ] implement lot based FIFO for exitRecords
+  - [ ] Implement MAE/MFE in backtest
