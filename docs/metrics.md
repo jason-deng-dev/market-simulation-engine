@@ -133,6 +133,7 @@ Short: adverse_bar = entry - high[t], favorable_bar = entry-low[t]
 ```c++
 struct BarExcursion{
   bool isLong;
+  string date;
   double adverseBar;
   double favorableBar;
 }
