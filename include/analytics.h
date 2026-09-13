@@ -17,7 +17,9 @@ struct OpenPosition {
 };
 
 struct ExitRecord {
-  std::string time;
+  std::string entryTime;
+  std::string exitTime;
+  
   int direction;
   int qty;
 
@@ -92,7 +94,7 @@ public:
   void reportExits() {
     std::cout << "size:" << exitRecords.size() << '\n';
     for (auto &e : exitRecords) {
-      std::cout << "Date:" << e.time << " Qty:" << e.qty
+      std::cout << "Entry time:" << e.entryTime << " Exit time:" << e.exitTime << " Qty:" << e.qty
                 << " Entry price:" << e.entryPrice
                 << " Exit price:" << e.exitPrice << " pnl:" << e.pnl << '\n';
     }
