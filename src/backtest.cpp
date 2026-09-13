@@ -18,6 +18,9 @@ void Backtest::run(DataFeed &feed, Strategy &strategy, State &state) {
 
     int qtyBefore = state.getNetQty();
 
+    if (qtyBefore != 0)
+      state.addPriceRange(bar.date, bar.low, bar.high);
+
     // fill first
     bool increasingPosition =
         std::abs(state.getNetQty() + qty) > std::abs(state.getNetQty());

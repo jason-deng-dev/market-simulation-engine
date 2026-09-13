@@ -113,30 +113,20 @@ struct PositionRecord{time openTime, closeTime; int direction; double entryNotio
 
 # MAE/MFE
 - MAE (Maximum adverse excursion)
-  - maximum loss a trade incurs before turning profitable (Long)
-  - minimum gain before turning unprofitable (Short)
+  - worst unrealized loss at any point during the trade
 - MFE (Maximum favorable excursion)
-  - Maxiumum profit a trade reaches before closing
-
-- Use MAE to set realistic stop-loss levels to limit risk
-- if MAE is much higher than MFE, the risk outweighs potential reward (adjust exit strategy)
-- use MFE to see if profits were maximized on past trades (adjust exit strategy)
-- MAE and MFE help manage risk by setting stop-loss levels and captializing on profit opportunities
-
-MAE/MFE
-- are per-bar (per-tick) metrics that accumulate over the holding period, and then get summarized into a single number per trade
+  - best unrealized gain at any point during trade
 
 state holds for each bar where hold position:
 Long: adverse_bar = low[t] - entry, favorable_bar = high[t] - entry
 Short: adverse_bar = entry - high[t], favorable_bar = entry-low[t]
 
 ```c++
-struct BarExcursion{
-  bool isLong;
+struct PriceRange{
   string date;
-  double adverseBar;
-  double favorableBar;
+  double minPrice;
+  double maxPrice;
 }
 
-std::vector<BarExcursion>
+std::vector<PriceRange>
 ```

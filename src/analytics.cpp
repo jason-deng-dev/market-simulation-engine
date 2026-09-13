@@ -44,7 +44,7 @@ void Analytics::recordExecutions(const std::vector<Execution> &executions) {
       const double pnl = lot.direction * matched * (price - lot.price);
 
       exitRecords.push_back(
-          {lot.date , date, lot.direction, matched, price, lot.price, pnl});
+          {lot.date, date, lot.direction, matched, price, lot.price, pnl});
       exitNotional += lot.direction * matched * price;
       remaining -= matched;
 
@@ -74,8 +74,4 @@ void Analytics::recordExecutions(const std::vector<Execution> &executions) {
   }
 }
 
-void Analytics::recordEquityCurve(const std::vector<Equity>&equityCurve) {
-
-
-
-}
+void Analytics::recordEquityCurve(const std::vector<Equity> &equityCurve) {}

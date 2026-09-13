@@ -16,11 +16,10 @@ struct Execution {
   double price{};
 };
 
-struct BarExcursion {
+struct PriceRange {
   std::string date{};
-  bool isLong{};
-  double adverseBar{};
-  double favorableBar{};
+  double minPrice{};
+  double maxPrice{};
 };
 
 class State {
@@ -41,6 +40,10 @@ public:
     executions.push_back({date, qty, price});
   }
 
+  void addPriceRange(const std::string&date, double minPrice, double maxPrice) {
+    priceRange.push_back({date, minPrice, maxPrice});
+  }
+
   const std::vector<Equity> &getEquityCurve() const { return equityCurve; }
 
   const std::vector<Execution> &getExecutions() const { return executions; }
@@ -50,7 +53,7 @@ private:
   int netQty{};
   std::vector<Equity> equityCurve;
   std::vector<Execution> executions;
-  std::vector<BarExcursion> barExcursions;
+  std::vector<PriceRange> priceRange;
 };
 
 #endif
