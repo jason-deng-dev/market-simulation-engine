@@ -35,18 +35,6 @@ Per-exit records are built by matching each exit fill against open lots, oldest 
   - sell 150 against lots of 100 / 30 / 20 -> 3 records, each with its own entryTime and entryPrice, all sharing the same time and exitPrice
   - qty per record = the portion of that lot consumed, not the fill qty
   - sum of qty across the records of one fill == the fill qty
-- same convention as QuantConnect LEAN (`FillGroupingMethod.FillToFill` + `FillMatchingMethod.FIFO`): a sell closing multiple buys is N closed trades, and per-exit win rate counts N
-- lots are per-fill uniform under notional sizing, so per-lot win rate ~= per-fill win rate; diverges once scale-in adds differ in size
-- per-lot is the store, everything else is a view of it
-  - per-fill view = group lot records by time + exitPrice
-  - per-position view = PositionRecord, notional sums, independent of matching method
-  - aggregation only goes one way: a blended entry price can never recover the lots, but lots can always be grouped back up
-- holding period exists only at lot level (exit time - entry time), a blended entry price loses it
-
-invariant, checked per position: `sum(ExitRecord.pnl) == PositionRecord.pnl`. Both views describe the same fills, so if they disagree the matching is wrong.
-
-matching method is a choice, not a fact. FIFO here, but avg cost vs FIFO is jurisdictional and contractual: IRS defaults to FIFO for securities (specific identification to override), CRA pools identical properties at average cost. Record the method next to any per-exit number or it isn't reproducible.
-
 
 # trade-close metrics
 For each trade
@@ -123,7 +111,7 @@ struct PositionRecord{time openTime, closeTime; int direction; double entryNotio
   - constant annual rate that would take you from start equity to end equity, compounded
   - = (E_end / E_start) ^ (1/years)-1
 
-
+# MAE/MFE
 - MAE (Maximum adverse excursion)
   - maximum loss a trade incurs before turning profitable (Long)
   - minimum gain before turning unprofitable (Short)
@@ -134,3 +122,20 @@ struct PositionRecord{time openTime, closeTime; int direction; double entryNotio
 - if MAE is much higher than MFE, the risk outweighs potential reward (adjust exit strategy)
 - use MFE to see if profits were maximized on past trades (adjust exit strategy)
 - MAE and MFE help manage risk by setting stop-loss levels and captializing on profit opportunities
+
+MAE/MFE
+- are per-bar (per-tick) metrics that accumulate over the holding period, and then get summarized into a single number per trade
+
+state holds for each bar where hold position:
+Long: adverse_bar = low[t] - entry, favorable_bar = high[t] - entry
+Short: adverse_bar = entry - high[t], favorable_bar = entry-low[t]
+
+```c++
+struct BarExcursion{
+  bool isLong;
+  double adverseBar;
+  double favorableBar;
+}
+
+std::vector<BarExcursion>
+```
