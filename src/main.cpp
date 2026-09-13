@@ -21,15 +21,12 @@ int main() {
 
   Analytics an{};
 
-  
-
-
   std::cout << "equity after:" << st.getEquityCurve().back().equity <<'\n';
   std::cout << "cash after:" << st.getCash() << " shares after:" << st.getNetQty() << '\n';
 
   an.captureState(st);
   // an.reportPositions();
-  an.reportExits();
+  // an.reportExits();
 
   return 0;
 }

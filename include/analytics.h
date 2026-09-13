@@ -86,14 +86,13 @@ public:
                 << " Exit:" << p.exitNotional << " PNL:" << p.pnl << '\n';
     }
   }
-
+  
   void reportExits() {
     std::cout << "size:" << exitRecords.size() << '\n';
     for (auto &e : exitRecords) {
       std::cout << "Date:" << e.time << " Qty:" << e.qty
-                << " Exit price:" << e.exitPrice
-                << " Entry price:" << e.entryPrice << " pnl:" << e.pnl
-                << '\n';
+                << " Entry price:" << e.entryPrice
+                << " Exit price:" << e.exitPrice << " pnl:" << e.pnl << '\n';
     }
   }
 };

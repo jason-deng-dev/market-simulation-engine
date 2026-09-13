@@ -44,7 +44,7 @@ public:
   const std::vector<Equity>& getEquityCurve() const{
     return equityCurve;
   }
-
+ 
   const std::vector<Execution>& getExecutions() const {
     return executions;
   }

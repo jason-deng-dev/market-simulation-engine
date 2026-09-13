@@ -14,6 +14,6 @@
     - [x] resulting in ever increasing short position
 - [ ] force close account on last bar
 - [ ] Analytics
-  - [ ] fillRecords
-    - [ ] implement lot based FIFO for exitRecords
+  - [x] fillRecords
+    - [x] implement lot based FIFO for exitRecords
   - [ ] Implement MAE/MFE in backtest

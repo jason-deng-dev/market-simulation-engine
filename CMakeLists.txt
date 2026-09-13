@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.3)
-project(marketSimulation)
+project(backtester)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -13,7 +13,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(googletest)
 
-add_library(marketSim_core
+add_library(backtester_core
   src/analytics.cpp
   src/backtest.cpp
   src/datafeed.cpp
@@ -23,15 +23,15 @@ add_library(marketSim_core
 
 
 
-target_include_directories(marketSim_core PUBLIC include)
+target_include_directories(backtester_core PUBLIC include)
 
-add_executable(marketSim
+add_executable(backtester
   src/main.cpp
 )
 
-target_compile_options(marketSim PRIVATE -Wall -Wextra)
+target_compile_options(backtester PRIVATE -Wall -Wextra)
 
-target_link_libraries(marketSim PRIVATE marketSim_core)
+target_link_libraries(backtester PRIVATE backtester_core)
 
 enable_testing()
 
@@ -41,7 +41,7 @@ add_executable(backtesting_test
 
 target_link_libraries(backtesting_test PRIVATE
   GTest::gtest_main
-  marketSim_core
+  backtester_core
 )
 
 include (GoogleTest)
@@ -60,10 +60,10 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googlebenchmark)
 
-add_executable(marketSim_bench benchmarks/main.cpp)
-target_link_libraries(marketSim_bench PRIVATE
+add_executable(backtester_bench benchmarks/main.cpp)
+target_link_libraries(backtester_bench PRIVATE
   benchmark::benchmark
   benchmark::benchmark_main
-  marketSim_core
+  backtester_core
 )
 

@@ -33,7 +33,7 @@ void Backtest::run(DataFeed &feed, Strategy &strategy, State &state) {
     if (qtyAfter == 0) {
       maxPrice = -std::numeric_limits<double>::infinity();
       minPrice = std::numeric_limits<double>::infinity();
-    } else if (qtyBefore == 0 || (qtyBefore > 0) != (qtyAfter>0)) {
+    } else if (qtyBefore == 0 || (qtyBefore > 0) != (qtyAfter > 0)) {
       // episode starts here (from flat or flip)
       maxPrice = bar.high;
       minPrice = bar.low;
@@ -45,11 +45,10 @@ void Backtest::run(DataFeed &feed, Strategy &strategy, State &state) {
 
     // force close account
     if (state.getNetQty() != 0) {
-      state.addExecution(bar.date, -state.getNetQty(), bar.close, maxPrice, minPrice);
+      state.addExecution(bar.date, -state.getNetQty(), bar.close, maxPrice,
+                         minPrice);
     }
     state.addEquity(bar.date, bar.close);
-
-    
   }
   std::cout << "Backtest complete\n";
 }
